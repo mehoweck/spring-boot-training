@@ -6,12 +6,14 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.effectivedev.articles.domain.ArticlesService;
 import pl.effectivedev.articles.domain.model.Article;
 import pl.effectivedev.articles.domain.model.ArticleId;
 
+import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -43,7 +45,7 @@ public class ArticlesController {
     // POST http://localhost:8080/articles
     // { ... }
     @PostMapping
-    public ResponseEntity<String> createArticle(@RequestBody Article article, @RequestHeader("x-user") String creator) {
+    public ResponseEntity<String> createArticle(@Validated(Article.Create.class) @RequestBody Article article, @RequestHeader("x-user") String creator) {
         var id = articlesService.save(article, currentUser.getUser()).asString();
 
         return ResponseEntity
@@ -57,7 +59,7 @@ public class ArticlesController {
     // PUT http://localhost:8080/articles/111111-1111-11111-11111-11111
     // { ... }
     @PutMapping("/{id}")
-    public void updateArticle(@PathVariable("id") ArticleId id, @RequestBody Article article) {
+    public void updateArticle(@PathVariable("id") ArticleId id, @Validated(Article.Update.class) @RequestBody Article article) {
         articlesService.update(id, article);
     }
 

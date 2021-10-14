@@ -5,6 +5,8 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,6 +21,7 @@ import pl.effectivedev.articles.domain.ArticlesStorage;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,7 +69,31 @@ class ArticlesControllerTest {
                 .andExpect(header().string(HttpHeaders.LOCATION, Matchers.matchesPattern("/articles/.{36}")));
     }
 
-//    @ParameterizedTest
+    @ParameterizedTest
+    @MethodSource("validationData")
+    public void shouldValidateOnCreateArticle(String json, String responseCode, String responseMessage) throws Exception{
+        mockMvc.perform(post("/articles")
+                        .content(loadJson(json))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("x-user", "junit")
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(responseCode))
+                .andExpect(jsonPath("$.messages[0]").value(responseMessage));
+    }
+
+    public static Stream<Arguments> validationData() {
+        return Stream.of(
+                Arguments.of("article-emptyTitle.json", "40400", "Field value error in 'title': Not enough words"),
+                Arguments.of("article-notEnoughWordsInTitle.json", "40400", "Field value error in 'title': Not enough words")
+//                Arguments.of("article-notNullCreator.json", "40400", "Title cannot be empty"),
+//                Arguments.of("article-emptyTitle.json", "40400", "Title cannot be empty"),
+//                Arguments.of("article-emptyTitle.json", "40400", "Title cannot be empty"),
+//                Arguments.of("article-emptyTitle.json", "40400", "Title cannot be empty")
+        );
+    }
+
 
     private String loadJson(String path) throws IOException {
         var stream = getClass().getResourceAsStream(path);
