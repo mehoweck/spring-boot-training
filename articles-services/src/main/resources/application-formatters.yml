@@ -1,0 +1,11 @@
+
+
+articles:
+  formatters:
+    plain: true
+    full: true
+    fullPrefix: Article prefix!
+    defaultFormatter: PLAIN
+
+#server:
+#  port: 8081

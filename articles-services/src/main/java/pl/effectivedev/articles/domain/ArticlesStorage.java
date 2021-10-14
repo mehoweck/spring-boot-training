@@ -1,5 +1,6 @@
 package pl.effectivedev.articles.domain;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import pl.effectivedev.articles.domain.exception.ArticleNotFound;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @Component
 //@Scope("prototype")
+@Slf4j
 public class ArticlesStorage {
 
     private Map<ArticleId, Article> data = new HashMap<>();
@@ -20,6 +22,7 @@ public class ArticlesStorage {
     public ArticleId create(Article article) {
         var id = ArticleId.generate();
         data.put(id, article);
+        log.info("Created: {}", id.asString());
         return id;
     }
 

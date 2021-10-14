@@ -1,3 +1,21 @@
 server:
   port: 7070
 
+spring:
+  profiles:
+    active: formatters
+    include: plainFormatter, json-logs
+
+
+#SERVER_PORT -> server.port
+logging:
+  level:
+   root: INFO
+   pl.effectivedev.articles: DEBUG
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,env,configprops,beans,info,scheduledtasks

@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import pl.effectivedev.articles.domain.model.Article;
 
-@Component
-@Qualifier("plainFormatter")
+//@Component
+//@Qualifier("plainFormatter")
 public class PlainFormatter implements ArticleFormatter {
 
     @Override
