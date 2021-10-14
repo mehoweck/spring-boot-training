@@ -1,0 +1,238 @@
+openapi: 3.0.3
+info:
+  title: Article Service
+  contact:
+    name: Łukasz Monkiewicz
+    url: https://effectivedev.pl
+    email: lukasz@effectivedev.pl
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Inferred Url
+tags:
+  - name: articles-controller
+    description: Articles Controller
+paths:
+  /articles:
+    get:
+      tags:
+        - articles-controller
+      summary: getArticles
+      operationId: getArticlesUsingGET
+      parameters:
+        - name: title
+          in: query
+          description: title
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: author
+          in: query
+          description: author
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Article'
+    post:
+      tags:
+        - articles-controller
+      summary: createArticle
+      operationId: createArticleUsingPOST
+      parameters:
+        - name: x-user
+          in: header
+          description: x-user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Article'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /articles/{id}:
+    get:
+      tags:
+        - articles-controller
+      summary: getArticle
+      operationId: getArticleUsingGET
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Article'
+    put:
+      tags:
+        - articles-controller
+      summary: updateArticle
+      operationId: updateArticleUsingPUT
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Article'
+      responses:
+        '200':
+          description: OK
+    delete:
+      tags:
+        - articles-controller
+      summary: deleteArticle
+      operationId: deleteArticleUsingDELETE
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /articles/{id}/download:
+    get:
+      tags:
+        - articles-controller
+      summary: downloadArticle
+      operationId: downloadArticleUsingGET
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Resource'
+  /articles/{id}/upload:
+    post:
+      tags:
+        - articles-controller
+      summary: upload
+      operationId: uploadUsingPOST
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              format: binary
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    Article:
+      title: Article
+      required:
+        - author
+        - content
+        - creator
+        - title
+      type: object
+      properties:
+        author:
+          type: string
+        content:
+          type: string
+        creator:
+          type: string
+        sources:
+          $ref: '#/components/schemas/Sources'
+        title:
+          type: string
+    InputStream:
+      title: InputStream
+      type: object
+    Resource:
+      title: Resource
+      type: object
+      properties:
+        description:
+          type: string
+        file:
+          type: string
+          format: binary
+        filename:
+          type: string
+        inputStream:
+          $ref: '#/components/schemas/InputStream'
+        open:
+          type: boolean
+        readable:
+          type: boolean
+        uri:
+          type: string
+          format: uri
+        url:
+          type: string
+          format: url
+    Sources:
+      title: Sources
+      type: object
+      properties:
+        articles:
+          type: array
+          items:
+            type: string
+        notes:
+          type: array
+          items:
+            type: string
+        webLinks:
+          type: array
+          items:
+            type: string
