@@ -13,9 +13,29 @@ logging:
    root: INFO
    pl.effectivedev.articles: DEBUG
 
+# /actuator/prometheus   <---- Prometheus  <--- Grafana
 
 management:
   endpoints:
     web:
       exposure:
         include: health,prometheus,env,configprops,beans,info,scheduledtasks
+  endpoint:
+    health:
+      # k8s readiness - aplikacja wsta?a i zainicjalizowa?a si?  /actuator/health/readiness
+      # k8s liveness - /actuator/health/liveness
+      # k8s startup - /actuator/health/readiness
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    ldap:
+      enabled: false
+
+# INFO_SOMETHING_JVM -> info.something.jvm
+info: # /actuator/info
+  version: 1.0.0
+  something:
+    other: "lorem"
+    this: true
+    home: ${HOME}

@@ -1,10 +1,13 @@
 package pl.effectivedev.articles.domain;
 
 
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Tags;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.effectivedev.articles.config.FormatterConfigurationProperties;
+import pl.effectivedev.articles.config.MetricOperations;
 import pl.effectivedev.articles.domain.exception.ArticleFormatterNotFound;
 import pl.effectivedev.articles.domain.formatter.ArticleFormatter;
 import pl.effectivedev.articles.domain.model.Article;
@@ -14,6 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +29,7 @@ public class ArticlesService {
     private final ArticlesStorage articlesStorage;
     private final Set<ArticleFormatter> articleFormatters;
     private final FormatterConfigurationProperties configurationProperties;
+    private final MetricOperations metricOperations;
 
 
 //    @Value("${articles.formatters.defaultFormatter:FULL}")
@@ -62,15 +67,26 @@ public class ArticlesService {
 //
 //    }
     public ArticleId save(Article article, String creator) {
+        metricOperations.increment("articles_save_count",  Tags.of("creator", creator));
+        var start = System.currentTimeMillis();
         article.setCreator(creator);
-        return articlesStorage.create(article);
+        final ArticleId id = articlesStorage.create(article);
+
+        var duration = System.currentTimeMillis() - start;
+        metricOperations.recordDuration("articles_save", Tags.of("creator", creator), duration, TimeUnit.MILLISECONDS);
+
+        return id;
     }
 
+    @Timed("articles_find")
     public List<Article> findArticles(String title, String author) {
-        return articlesStorage.find().stream()
+        final List<Article> articleList = articlesStorage.find().stream()
                 .filter(article -> title == null || article.getTitle().contains(title))
                 .filter(article -> author == null || article.getAuthor().equals(author))
                 .collect(Collectors.toList());
+
+        metricOperations.setArticleCount(articleList.size());
+        return articleList;
     }
 
     public Article getArticle(ArticleId id) {
