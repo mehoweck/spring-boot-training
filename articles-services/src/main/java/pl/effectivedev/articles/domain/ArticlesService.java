@@ -5,7 +5,10 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Tags;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.effectivedev.articles.config.FormatterConfigurationProperties;
 import pl.effectivedev.articles.config.MetricOperations;
 import pl.effectivedev.articles.domain.exception.ArticleFormatterNotFound;
@@ -23,7 +26,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+//@Transactional
 public class ArticlesService {
+
+    // --> [Transactional.create -> [ArticleService.create]]
+
 
 //    @Autowired
     private final ArticlesStorage articlesStorage;
@@ -66,6 +73,13 @@ public class ArticlesService {
 //        return CompletableFuture.completedFuture(articlesStorage.create(article));
 //
 //    }
+    @Transactional(
+            propagation = Propagation.REQUIRES_NEW,
+            rollbackFor = {Exception.class},
+            timeout = 30000//,
+//            readOnly = true
+    )
+//    @Modifying
     public ArticleId save(Article article, String creator) {
         metricOperations.increment("articles_save_count",  Tags.of("creator", creator));
         var start = System.currentTimeMillis();
@@ -80,10 +94,7 @@ public class ArticlesService {
 
     @Timed("articles_find")
     public List<Article> findArticles(String title, String author) {
-        final List<Article> articleList = articlesStorage.find().stream()
-                .filter(article -> title == null || article.getTitle().contains(title))
-                .filter(article -> author == null || article.getAuthor().equals(author))
-                .collect(Collectors.toList());
+        final List<Article> articleList = articlesStorage.find(title, author);
 
         metricOperations.setArticleCount(articleList.size());
         return articleList;

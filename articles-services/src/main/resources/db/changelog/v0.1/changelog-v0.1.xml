@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+<!--    <include relativeToChangelogFile="true" file="changelog-000001.xml"/>-->
+<!--    <include relativeToChangelogFile="true" file="changelog-000002.xml"/>-->
+
+<!--    <changeSet id="clear" author="lmonkiewicz" context="drop">-->
+<!--        <delete tableName="DATABASECHANGELOG"/>-->
+<!--    </changeSet>-->
+
+    <changeSet id="202110140930" author="lmonkiewicz" context="structure">
+        <validCheckSum>8:a9c5d683b86f340c5b0d61902244793c</validCheckSum>
+        <comment>Creates basic tables</comment>
+        <createTable tableName="ARTICLE">
+            <column name="ID" type="varchar">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="article_pk"/>
+            </column>
+            <column name="TITLE" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTENT" type="longtext"/>
+            <column name="AUTHOR" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="SOURCE">
+            <column name="ID" type="number" startWith="1" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="source_pk"/>
+            </column>
+            <column name="CONTENT" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ARTICLE_ID" type="varchar">
+                <constraints nullable="false" foreignKeyName="source_article_fk" referencedTableName="ARTICLE" referencedColumnNames="ID"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="202110141000" author="lmonkiewicz" context="structure">
+        <addColumn tableName="ARTICLE">
+            <column name="SUMMARY" type="varchar"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="202110141010" author="lmonkiewicz" context="testdata">
+<!--        <loadData tableName="ARTICLE" file=""></loadData>-->
+        <insert tableName="ARTICLE">
+            <column name="ID">11111-11111</column>
+            <column name="TITLE">Liquibase article #1</column>
+            <column name="AUTHOR">liquibase</column>
+        </insert>
+        <insert tableName="ARTICLE">
+            <column name="ID">11111-11112</column>
+            <column name="TITLE">Liquibase article #2</column>
+            <column name="AUTHOR">liquibase</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="202110141015" author="lmonkiewicz" context="dev">
+        <insert tableName="ARTICLE">
+            <column name="ID">11111-11113</column>
+            <column name="TITLE">DEV article #1</column>
+            <column name="AUTHOR">liquibase</column>
+        </insert>
+        <insert tableName="ARTICLE">
+            <column name="ID">11111-11114</column>
+            <column name="TITLE">DEV article #2</column>
+            <column name="AUTHOR">liquibase</column>
+        </insert>
+    </changeSet>
+
+
+</databaseChangeLog>
