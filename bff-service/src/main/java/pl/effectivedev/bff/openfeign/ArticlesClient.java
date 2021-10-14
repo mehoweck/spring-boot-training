@@ -1,6 +1,7 @@
 package pl.effectivedev.bff.openfeign;
 
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +19,11 @@ import java.util.List;
 )
 public interface ArticlesClient {
 
+    // -->> [Cacheable.getArticles [ArticlesClient.getArticles]]
+
+
+
+    @Cacheable("articles-list")
     @GetMapping
     List<Article> getArticles(
             @RequestParam(value = "title", required = false) String title,

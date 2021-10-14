@@ -26,14 +26,14 @@ public class TestService {
     // 3. Wygenerowany klient OpenFeign z OpenAPI
 
 
-    @Scheduled(fixedRate = 5000)
+//    @Scheduled(fixedRate = 5000)
     public void createArticle() {
-//        var article = createGoodArticle();
-        var article = createBadArticle();
+        var article = createGoodArticle();
+//        var article = createBadArticle();
 
 //        var id = restTemplateClient.createArticle(article);
-//        var id = articlesClient.createArticle(article, "bff-service");
-        var id = generatedArticlesClient.createArticleUsingPOST( "bff-service", toDto(article)).getBody();
+        var id = articlesClient.createArticle(article, "bff-service");
+//        var id = generatedArticlesClient.createArticleUsingPOST( "bff-service", toDto(article)).getBody();
         log.info("Article created: {}", id);
     }
 
@@ -49,8 +49,8 @@ public class TestService {
     public void getArticles() {
 
 //        var articles = restTemplateClient.getArticles();
-//        var articles = articlesClient.getArticles(null, null);
-        var articles = generatedArticlesClient.getArticlesUsingGET(null, null).getBody();
+        var articles = articlesClient.getArticles(null, null);
+//        var articles = generatedArticlesClient.getArticlesUsingGET(null, null).getBody();
 
         log.info("Article list size: {}", articles.size());
     }
