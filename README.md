@@ -5,12 +5,14 @@
 - Spring Initializer
 - Struktura wygenerowanego projektu
 - Uruchamianie aplikacji
+- 
 ##Zarządzanie zależnościami
 - Co to jest bean?
 - @Scope i cykl życia
 - Wstrzykiwanie zależności
 - Konfiguracja za pomocą kodu
 - Zaawansowane mechanizmy wyboru zależności
+- 
 ##Konfiguracja
 - Plik application.yml i jego najważniejsze elementy
 - Profile aplikacji i sposoby ich wykorzystania
