@@ -3,7 +3,6 @@ package pl.effectivedev.articles.domain;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import pl.effectivedev.articles.config.FormatterConfigurationProperties;
 import pl.effectivedev.articles.domain.exception.ArticleFormatterNotFound;
@@ -15,7 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,12 +61,33 @@ public class ArticlesService {
 //        return CompletableFuture.completedFuture(articlesStorage.create(article));
 //
 //    }
-    public ArticleId save(Article article) {
+    public ArticleId save(Article article, String creator) {
+        article.setCreator(creator);
         return articlesStorage.create(article);
     }
 
-    public List<Article> findArticles() {
-        return articlesStorage.find();
+    public List<Article> findArticles(String title, String author) {
+        return articlesStorage.find().stream()
+                .filter(article -> title == null || article.getTitle().contains(title))
+                .filter(article -> author == null || article.getAuthor().equals(author))
+                .collect(Collectors.toList());
+    }
+
+    public Article getArticle(ArticleId id) {
+        return articlesStorage.get(id);
+    }
+
+    public void update(ArticleId id, Article article) {
+        articlesStorage.update(id, article);
+    }
+
+    public void delete(ArticleId id) {
+        articlesStorage.delete(id);
+    }
+
+    public String printArticle(ArticleId id) {
+        var article = articlesStorage.get(id);
+        return formatArticle(article);
     }
 
 //    public ArticlesService(ArticlesStorage articlesStorage) {

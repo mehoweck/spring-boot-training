@@ -10,7 +10,6 @@ import pl.effectivedev.articles.domain.model.Article;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @Service
@@ -40,13 +39,13 @@ public class TestService {
                 .build();
 
 //        var id = articlesService.save(article).get(1, TimeUnit.SECONDS);
-        var id = articlesService.save(article);
+        var id = articlesService.save(article, "scheduler");
         log.info("Created article {}: {}", id.asString(), articlesService.formatArticle(article));
     }
 
     @Scheduled(fixedRate = 17000)
     public void listArticles() {
-        var articles = articlesService.findArticles();
+        var articles = articlesService.findArticles(null, null);
 
         log.info("Number of articles: {}", articles.size());
     }
