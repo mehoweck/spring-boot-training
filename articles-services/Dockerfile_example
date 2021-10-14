@@ -1,0 +1,29 @@
+FROM adoptopenjdk:11
+
+LABEL "pl.effectivedev.app"="Article Service"
+LABEL "pl.effectivedev.author"="lmonkiewcz"
+
+ARG COMMAND=--version
+ARG VERSION=unknown
+#ARG NO_DEFAULT
+
+LABEL "pl.effectivedev.version"=$VERSION
+
+COPY pom.xml /pom.xml
+#ADD http://... /pom.xml
+
+#RUN apt-get update && apt-get install ...
+
+# -------------------------
+ENV JAVA_COMMAND=$COMMAND
+ENV ADMIN_PASS=aaaa
+
+#CMD ls
+
+USER 0
+
+
+
+USER 100
+
+ENTRYPOINT java $JAVA_COMMAND
